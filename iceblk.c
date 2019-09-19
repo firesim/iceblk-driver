@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+/*
+ * Copyright (C) 2017-2019 Regents of the University of California
+ */
+
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/types.h>
