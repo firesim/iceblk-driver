@@ -35,3 +35,4 @@
 Module.symvers
 modules.builtin
 .tmp_versions
+*.mod
