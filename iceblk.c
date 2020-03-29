@@ -213,6 +213,7 @@ static const struct blk_mq_ops iceblk_mq_ops = {
 
 static int iceblk_setup(struct iceblk_port *port)
 {
+	static int disknum = 0;
 	uint32_t nsectors = ioread32(port->iomem + ICEBLK_NSECTORS);
 	struct device *dev = port->dev;
 	uint32_t i, ntags, max_req_len;
@@ -255,7 +256,7 @@ static int iceblk_setup(struct iceblk_port *port)
 	port->gd->fops = &iceblk_fops;
 	port->gd->queue = port->queue;
 	port->gd->private_data = port;
-	snprintf(port->gd->disk_name, 32, ICEBLK_NAME);
+	snprintf(port->gd->disk_name, 32, ICEBLK_NAME "%d", disknum++);
 	set_capacity(port->gd, nsectors);
 	add_disk(port->gd);
 
