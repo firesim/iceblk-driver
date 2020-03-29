@@ -28,7 +28,6 @@
 
 #define ICEBLK_NAME "iceblk"
 #define ICEBLK_MINORS 16
-#define ICEBLK_SECTOR_SIZE 512
 
 #define ICEBLK_ADDR 0
 #define ICEBLK_OFFSET 8
@@ -244,7 +243,7 @@ static int iceblk_setup(struct iceblk_port *port)
 		dev_err(dev, "Could not initialize blk_queue\n");
 		goto exit_queue;
 	}
-	blk_queue_logical_block_size(port->queue, ICEBLK_SECTOR_SIZE);
+	blk_queue_logical_block_size(port->queue, SECTOR_SIZE);
 	blk_queue_max_segments(port->queue, 1);
 	blk_queue_max_hw_sectors(port->queue, max_req_len);
 
