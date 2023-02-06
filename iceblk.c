@@ -7,7 +7,6 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
-#include <linux/genhd.h>
 #include <linux/blkdev.h>
 #include <linux/bio.h>
 #include <linux/fs.h>
