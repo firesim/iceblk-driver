@@ -271,7 +271,6 @@ static int iceblk_setup(struct iceblk_port *port)
 
 	return 0;
 
-	blk_cleanup_disk(port->gd);
 exit_gendisk:
 	blk_mq_free_tag_set(&port->tag_set);
 exit_queue:
@@ -310,7 +309,6 @@ static int iceblk_teardown(struct iceblk_port *port)
 {
 	del_gendisk(port->gd);
 	put_disk(port->gd);
-	blk_cleanup_queue(port->queue);
 	unregister_blkdev(port->major, ICEBLK_NAME);
 	return 0;
 }
