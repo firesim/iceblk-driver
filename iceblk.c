@@ -322,6 +322,7 @@ static int iceblk_remove(struct platform_device *pdev)
 
 static struct of_device_id iceblk_of_match[] = {
 	{ .compatible = "ucb-bar,blkdev" },
+	{ .compatible = "ucbbar,blkdev" },
 	{}
 };
 
