@@ -4,8 +4,9 @@ obj-m += iceblk.o
 
 else
 
-# The default assumes you cloned this as part of firesim-software (FireMarshal)
-LINUXSRC=../../../../riscv-linux
+ifndef LINUXSRC
+$(error Please set the LINUXSRC environment variable to the path of your Linux source)
+endif
 
 KMAKE=make -C $(LINUXSRC) ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- M=$(PWD)
 
