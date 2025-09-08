@@ -21,6 +21,7 @@
 #include <linux/of_pci.h>
 #include <linux/of_platform.h>
 #include <linux/of_irq.h>
+#include <linux/platform_device.h>
 
 #include <asm/io.h>
 #include <asm/page.h>
@@ -215,6 +216,7 @@ static int iceblk_setup(struct iceblk_port *port)
 	uint32_t nsectors = ioread32(port->iomem + ICEBLK_NSECTORS);
 	struct device *dev = port->dev;
 	uint32_t i, ntags, max_req_len;
+	struct queue_limits lim = { 0 };
 	int err;
 
 	if (nsectors == 0) {
@@ -238,22 +240,24 @@ static int iceblk_setup(struct iceblk_port *port)
 
 	spin_lock_init(&port->lock);
 	err = blk_mq_alloc_sq_tag_set(&port->tag_set,
-		&iceblk_mq_ops, 2, BLK_MQ_F_SHOULD_MERGE);
+		&iceblk_mq_ops, 2, 0);
 	if (err) {
 		dev_err(dev, "Could not initialize tag set\n");
 		goto exit_queue;
 	}
 
-	port->gd = blk_mq_alloc_disk(&port->tag_set, NULL);
+	/* Set initial queue limits with the modern blk-mq API */
+	lim.logical_block_size = ICEBLK_SECTOR_SIZE;
+	lim.max_segments = 1;
+	lim.max_hw_sectors = max_req_len;
+	lim.max_sectors = max_req_len;
+
+	port->gd = blk_mq_alloc_disk(&port->tag_set, &lim, NULL);
 	if(IS_ERR(port->gd)) {
 		dev_err(dev, "Could not allocate disk\n");
 		goto exit_gendisk;
 	}
 	port->queue = port->gd->queue;
-
-	blk_queue_logical_block_size(port->queue, ICEBLK_SECTOR_SIZE);
-	blk_queue_max_segments(port->queue, 1);
-	blk_queue_max_hw_sectors(port->queue, max_req_len);
 
 	port->gd->major = port->major;
 	port->gd->first_minor = 0;
@@ -313,11 +317,11 @@ static int iceblk_teardown(struct iceblk_port *port)
 	return 0;
 }
 
-static int iceblk_remove(struct platform_device *pdev)
+static void iceblk_remove(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct iceblk_port *port = dev_get_drvdata(dev);
-	return iceblk_teardown(port);
+	iceblk_teardown(port);
 }
 
 static struct of_device_id iceblk_of_match[] = {
